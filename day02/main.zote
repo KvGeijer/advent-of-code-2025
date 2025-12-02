@@ -1,0 +1,14 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+
+invalids := 0;
+for (from, to) in "input.txt" >> read >> trim >> split(",") >> map(\>> split("-") >> map(int)) for i in [from:to+1] {
+    tens := log(i-1, 10) + 1;
+    ten_pow := 10^(tens/2);
+    if tens % 2 == 0 and i / ten_pow == i % ten_pow {
+        invalids += i;
+    }
+}
+
+invalids >> print;
