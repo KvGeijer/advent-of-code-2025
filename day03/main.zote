@@ -1,0 +1,17 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+fn max_jolt(line, bank_size) -> {
+    charge := 0;
+    at := 0;
+    for i in [0:bank_size] >> rev {
+        charge *= 10;
+        digit := line[at:if (i != 0) (-i) else len(line)] >> maximum; // A bit ugly how :-1 takes all but one item, but :-0 == :0, taking no items :(
+        at = line[at:] >> find(digit) >> add(at + 1);
+        charge += digit;
+    }
+    charge
+}
+
+for bank_size in [2, 12] 
+    "input.txt" >> read() >> split("\n") >> map(\>> map(int) >> max_jolt(bank_size)) >> sum >> print;
