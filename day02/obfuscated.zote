@@ -1,0 +1,29 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+// This script only solves part 2, and does so in a funny, but messy way, just subjectively
+// Also very inefficient in zote where map and similar functions are eagerly evaluated
+
+fn is_invalid(x) -> {
+}
+
+"input.txt" 
+	>> read 
+	>> trim 
+	>> split(",") 
+	>> map(\>> split("-") >> map(int)) 
+	>> map(\(from, to) -> [from:to+1])
+	>> concat
+	>> filter(\x -> [1:log(x, 10)/2 + 2] 
+		>> any(\chunk_size -> 
+			[0:(log(x, 10) + chunk_size)/chunk_size]
+				>> map(\off -> (x / (10^chunk_size)^off) % 10^chunk_size)
+				>> set
+				>> len
+				>> eq(1)
+				>> bit_and((log(x, 10) + 1) % chunk_size == 0)
+				>> bit_and(x >= 10)
+		)
+	)
+	>> sum
+	>> print;
