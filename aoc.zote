@@ -86,4 +86,8 @@ fn foldl(coll, acc, func) -> {
 	acc
 }
 
-
+// Return the first index in coll equal to item, or nil if not existing
+fn find(coll, item) -> {
+	for (i, val) in coll >> enumerate if val == item return i;
+	nil 
+}
