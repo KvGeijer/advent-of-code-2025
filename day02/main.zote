@@ -1,14 +1,24 @@
 include!("stdlib");
-include!("../aoc.zote");
 
+fn invalid_pattern(x, n_chunks) -> {
+    digits := log(x-1, 10) + 1;
+    if digits % n_chunks return false;
+    ten_pow := 10^(digits/n_chunks);
+    pattern := x % ten_pow;
 
+    while x /= ten_pow if x % ten_pow != pattern return false;
+    true
+}
+
+invalids_two := 0;
 invalids := 0;
 for (from, to) in "input.txt" >> read >> trim >> split(",") >> map(\>> split("-") >> map(int)) for i in [from:to+1] {
-    tens := log(i-1, 10) + 1;
-    ten_pow := 10^(tens/2);
-    if tens % 2 == 0 and i / ten_pow == i % ten_pow {
+    for n_chunks in [2:log(i-1, 10) + 2] if i >> invalid_pattern(n_chunks) {
+        if n_chunks == 2 invalids_two += i;
         invalids += i;
+        break;
     }
 }
 
+invalids_two >> print;
 invalids >> print;
