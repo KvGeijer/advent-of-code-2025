@@ -1,0 +1,22 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+board := "input.txt" >> read >> parse_matrix_dict;
+
+fn has_less_neighs(cell, board, nbr) -> {
+    cell >> neighs8 >> filter(\>> get_or(board, ".") >> eq("@")) >> len >> leq(nbr-1)
+} 
+
+fn find_accessible(board) -> {
+    board >> keys >> filter(\>> get(board) >> eq("@")) >> filter(\>> has_less_neighs(board, 4))
+}
+
+board >> find_accessible >> len >> print;
+
+removed := 0;
+remove := nil;
+while (remove = (board >> find_accessible)) {
+    removed += remove >> len;
+    for key in remove board[key] = ".";
+}
+removed >> print;
