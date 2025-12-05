@@ -1,0 +1,30 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+(ranges, nbrs) := "input.txt" >> read >> split("\n\n") >> map(\>> split("\n"));
+nbrs = nbrs >> map(int);
+ranges = ranges >> map(ints);
+
+nbrs >> filter(\nbr -> any(ranges, \(from, to) -> nbr >> in_range(from, to))) >> len >> print;
+
+nbr_fresh := 0;
+u_ranges := [];
+for (i, range) in ranges >> enumerate {
+    // range = clone(range);
+    for (j, (other_from, other_to)) in u_ranges[:i] >> enumerate {
+        if range[0] >> in_range(other_from, other_to) {
+            range[0] = other_to + 1;
+        }
+        else if range[1] >> in_range(other_from, other_to) {
+            range[1] = other_from - 1;
+        }
+        else if in_range(other_from, range[0], range[1]) and in_range(other_to, range[0], range[1]) {
+            //remove it from list, replace with new larger
+            u_ranges = u_ranges >> filter(\>> neq([other_from, other_to]));
+            nbr_fresh -= other_to - other_from + 1;
+        }
+    }
+    nbr_fresh += max(0, range[1] - range[0] + 1);
+    if range[0] <= range[1] range >> push(u_ranges);
+}
+nbr_fresh >> print;
