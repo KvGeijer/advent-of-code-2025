@@ -1,0 +1,17 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+lines := "input.txt" >> read >> split("\n");
+nbr_lines := lines[:-1] >> map(ints);
+ops := lines[-1] >> filter(\>> neq(" "));
+
+hor_ints := [0: nbr_lines[0] >> len] >> map(\col -> nbr_lines >> map(\>> [col]));
+
+vert_ints := [0:(lines >> map(len) >> maximum)] >> map(\col ->
+    lines[:-1] >> map(\>> [col]) >> concat >> filter(\>> neq(" ")) >> append("0") >> int >> div(10)     
+) >> split(0);
+
+for ints in [hor_ints, vert_ints]
+    zip(ops, ints) >> map(\(op, ints) -> if op == "*" prod(ints) else sum(ints)) >> sum >> print;
+
+    
