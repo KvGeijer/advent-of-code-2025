@@ -1,0 +1,26 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+fn vadd((a, b), (c, d)) -> [a+c, b+d];
+
+karta := "input.txt" >> read >> trim >> parse_matrix_dict;
+start := karta >> list >> filter(\(k, v) -> v == "S") >> [0] >> [0] >> print;
+
+splitters := set();
+fn dfs(at, visited) -> {
+    if at >> in(visited) 
+        visited[at]
+    else if at >> in(karta) >> not 
+        1
+    else if karta[at] == "^" {
+        at >> insert(splitters);
+        dfs(vadd(at, [0, -1]), visited) + dfs(vadd(at, [0, 1]), visited)
+    } 
+    else {
+        visited[at] = dfs(vadd(at, [1, 0]), visited)  
+    }
+}
+
+dfs(start, set()) >> print; // part 2
+splitters >> len >> print; // part 1
+
