@@ -1,0 +1,36 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+fn dist(b1, b2) -> zip(b1, b2) >> map(\(x, y) -> (x - y)^2) >> sum;
+
+boxes := "input.txt" >> read >> split("\n") >> map(ints);
+
+work := [];
+for (i, b1) in boxes >> enumerate for (j, b2) in boxes >> enumerate >> [i+1:]
+    [dist(b1, b2), i, j] >> push(work);
+work = work >> sort;
+
+conns := [0:len(boxes)];
+sizes := boxes >> map(\>> const(1));
+
+fn update(i,conns) -> 
+    while conns[i] != conns[conns[i]] conns[i] = conns[conns[i]];
+
+for (iter, (d, i, j)) in work >> enumerate {
+    if iter == 1000 sizes >> sort >> rev >> [:3] >> prod >> print; // Part 1
+
+    update(i, conns);
+    update(j, conns);
+
+    if conns[i] != conns[j] {
+        sizes[conns[i]] += sizes[conns[j]];
+        sizes[conns[j]] = 0;
+
+        conns[j] = conns[conns[j]] = conns[i];
+
+        if sizes[conns[i]] == len(boxes) {
+            [i, j] >> map(\i -> boxes[i][0]) >> prod >> print;
+            break;
+        }
+    }
+}
