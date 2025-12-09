@@ -1,0 +1,63 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+coords := "input.txt" >> read >> split('\n') >> map(ints);
+
+// Part 1
+coords >> map(\c -> coords >> map(\>> vsub(c) >> map(\>> abs >> add(1)) >> prod)) >> concat >> maximum >> print;
+
+// Track rows at which there are horizontal walls, per col
+// col >> [rows]
+hor_walls := coords >> map(\>> [1]) >> map(\k -> [k, []]) >> dict;
+
+// Track cols at which there are vertical walls, per row
+// row >> [cols]
+ver_walls := coords >> map(\>> [0]) >> map(\k -> [k, []]) >> dict;
+
+hor := nil;
+for ((rf, cf), (rt, ct)) in zip(coords, coords[1:] >> append([coords[0]])) {
+    old := hor;
+    hor = rf == rt;
+
+    // Important check to ensure the data does not have any points where it makes a sharp turn, invalidating later results
+    if abs(rf-rt) + abs(cf-ct) == 1 print("Just one diff!");
+    // Also important check for correctness
+    if old == hor print("Does not alternate");
+
+
+    if hor for c in [min(cf,ct):max(cf,ct) + 1] {
+        if c >> in(hor_walls)
+            rf >> push(hor_walls[c]);
+    }
+    else for r in [min(rf,rt):max(rf,rt) + 1] { // do count corners as walls
+        if r >> in(ver_walls)
+            cf >> push(ver_walls[r]);
+    }
+}
+
+for d in [hor_walls, ver_walls] for (k,v) in d d[k] = sort(v);
+
+fn is_green((r1, c1), (r2, c2)) -> {
+    // Walk around the perimiter of the square. If we don't cross any walls, it is fine
+    (r1, r2) = sort([r1, r2]);
+    (c1, c2) = sort([c1, c2]);
+
+    // Walk the ver walls
+    for r in [r1, r2] for c in [c1+1:c2] if c >> in(ver_walls[r]) return false;
+    // Walk the hor walls
+    for c in [c1, c2] for r in [r1+1:r2] if r >> in(hor_walls[c]) return false;
+    true
+}
+
+best := 0;
+for (i, p1) in coords >> enumerate for p2 in coords[i+1:] {
+    area := (abs(p1[0] - p2[0]) + 1) * (abs(p1[1] - p2[1]) + 1);
+    if area > best {
+        if is_green(p1, p2) {
+            best = area;
+        }
+    }
+}
+print(best);
+
+// coords >> map(\c -> coords >> filter(\>> is_green(c)) >> map(\>> vsub(c) >> map(\>> abs >> add(1)) >> prod)) >> concat >> maximum >> print;
