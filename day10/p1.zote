@@ -1,17 +1,8 @@
 include!("stdlib");
-include!("../aoc.zote");
 
-machines := "input.txt" >> read >> split("\n") >> map(\l -> {
-    b1 := l >> find("]");
-    b2 := l >> find("{");
-    [
-        l[1:b1] >> rev >> foldl(0, \acc, c -> acc*2 + (c == "#")),
-        l[b1:b2-2] >> split(")") >> map(\>> ints >> map(\p -> 2^p) >> sum),
-        l[b2:] >> ints, // TODO
-    ]
-});
+machines := "parsed.txt" >> read >> parse_json;
 
-machines >> map(\(pattern, buttons, _) -> {
+machines >> map(\(pattern, buttons, _, _) -> {
     vis := set();
     states := [0];
     presses := 0;

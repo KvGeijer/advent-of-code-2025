@@ -1,0 +1,14 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+machines := "input.txt" >> read >> split("\n") >> map(\l -> {
+    b1 := l >> find("]");
+    b2 := l >> find("{");
+    [
+        l[1:b1] >> rev >> foldl(0, \acc, c -> acc*2 + (c == "#")),
+        l[b1:b2-2] >> split(")") >> map(\>> ints >> map(\p -> 2^p) >> sum),
+        l[b1:b2-2] >> split(")") >> map(ints),
+        l[b2:] >> ints,
+    ]
+}) >> print;
+
