@@ -1,0 +1,14 @@
+include!("stdlib");
+
+conns := "input.txt" >> read >> split("\n") >> map(\>> split(": ") >> (\(k, r) -> [k, r >> split(" ")])) >> dict;
+conns["out"] = [];
+
+fn dfs(at, paths) ->  
+    if at >> in(paths) paths[at]
+    else paths[at] = conns[at] >> map(\>> dfs(paths)) >> sum;
+
+fn paths(from, to) -> dfs(from, dict([[to, 1]]));
+
+paths("you", "out") >> print;
+[id, rev] >> map(\f -> f(["fft", "dac"])) >> map(\(f, s) -> paths("svr", f) * paths(f, s) *  paths(s, "out")) >> filter(\>> neq(0)) >> map(print);
+
