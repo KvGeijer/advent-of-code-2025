@@ -1,0 +1,5 @@
+include!("stdlib");
+include!("../aoc.zote");
+
+(presents, trees) := "input.txt" >> read >> split("\n\n") >> (\ls -> [ls[:-1] >> map(\>> count >> ["#"]), ls[-1] >> split("\n") >> map(ints)]);
+trees >> filter(\t -> t[2:] >> enumerate >> map(\(i, n) -> presents[i]*n) >> sum >> lt(t[:2] >> prod)) >> len >> print;
